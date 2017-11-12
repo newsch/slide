@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>slide</title>
+    <style media="screen">
+      * {
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>slide</h1>
+    <form name="add" action="/" method="post">
+      <label for="user">who you are</label><br>
+      <select id="user" name="user" value="anon" required>
+        {% for user in users %}
+        <option value="{{ user }}">{{ user }}</option>
+        {% endfor %}
+      </select><br>
+      <input form="meta" type="checkbox" name="remember-user" id="remember-user"/><label for="remember-user">remember my choice</label><br>
+      <br>
+      <label for="speed">speed - </label><span id="speed-value">0</span><br>
+      <input type="range" name="speed" min="0", max="5" value="0" required onchange="showSpeedValue(this.value)"/><br>
+      <br>
+      <input type="checkbox" id="water" name="water" value="true"/>
+      <label for="water">water on the rail</label><br>
+      <br>
+      <label for="comments">comments</label><br>
+      <input name="comments" type="text"/><br>
+      <br>
+      <input id="submit" type="submit" value="submit"/>
+    </form>
+  </body>
+  <script type="text/javascript">
+    // update speed value with slider
+    function showSpeedValue(newValue)
+    {
+      document.getElementById("speed-value").innerHTML=newValue;
+    }
+    // set user if cookie exists
+    var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)user\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    console.log("cookieValue: " + cookieValue);
+    userDropdown = document.getElementById("user");
+    if (cookieValue != null) {
+      for (i=0; i < userDropdown.length; i++) {
+        if (userDropdown.options[i].value == cookieValue){
+          userDropdown.value = cookieValue;
+          document.getElementById("remember-user").checked = true;
+          console.log("set dropdown to cookieValue");
+        }
+      }
+    }
+    // set or delete user cookie on submit
+    document.getElementById('submit').addEventListener('click', function(event) {
+      console.log("clicked!");
+      if (document.getElementById("remember-user").checked == true) {
+        document.cookie = "user=" + userDropdown.value
+        console.log("saved user to cookie");
+      } else {
+        document.cookie = 'user' + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        console.log("removed user cookie");
+      }
+    }, false);
+  </script>
+</html>

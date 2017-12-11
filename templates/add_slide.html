@@ -13,18 +13,26 @@
     <h1>slide</h1>
     <form name="add" action="/" method="post">
       <label for="user">who you are</label><br>
-      <select id="user" name="user" value="anon" required>
+      <input list="users" id="user" name="user" value="anon" onclick="this.select()">
+      <datalist id="users">
         {% for user in users %}
-        <option value="{{ user }}">{{ user }}</option>
+        <option value="{{ user }}"></option>
         {% endfor %}
-      </select><br>
+      </datalist><br>
       <input form="meta" type="checkbox" name="remember-user" id="remember-user"/><label for="remember-user">remember my choice</label><br>
       <br>
       <label for="speed">speed - </label><span id="speed-value">0</span><br>
       <input type="range" name="speed" min="0", max="5" value="0" required onchange="showSpeedValue(this.value)"/><br>
       <br>
+      <label for="material">material</label><br>
+      <select id="material" name="material" required>
+        {% for material in materials %}
+        <option value="{{ material }}">{{ material }}</option>
+        {% endfor %}
+      </select><br>
+      <br>
       <input type="checkbox" id="water" name="water" value="true"/>
-      <label for="water">water on the rail</label><br>
+      <label for="water">water/snow on the rail</label><br>
       <br>
       <label for="comments">comments</label><br>
       <input name="comments" type="text"/><br>
@@ -33,6 +41,9 @@
     </form>
   </body>
   <script type="text/javascript">
+    document.onload = function() {
+      showSpeedValue(0);
+    }
     // update speed value with slider
     function showSpeedValue(newValue)
     {
@@ -42,20 +53,20 @@
     var cookieValue = document.cookie.replace(/(?:(?:^|.*;\s*)user\s*\=\s*([^;]*).*$)|^.*$/, "$1");
     console.log("cookieValue: " + cookieValue);
     userDropdown = document.getElementById("user");
-    if (cookieValue != null) {
-      for (i=0; i < userDropdown.length; i++) {
-        if (userDropdown.options[i].value == cookieValue){
-          userDropdown.value = cookieValue;
-          document.getElementById("remember-user").checked = true;
-          console.log("set dropdown to cookieValue");
-        }
-      }
+    usersDatalist = document.getElementById("users");
+    if (cookieValue != "") {
+      userDropdown.value = cookieValue;
+      document.getElementById("remember-user").checked = true;
+      console.log("set user to cookieValue");
     }
     // set or delete user cookie on submit
     document.getElementById('submit').addEventListener('click', function(event) {
       console.log("clicked!");
       if (document.getElementById("remember-user").checked == true) {
-        document.cookie = "user=" + userDropdown.value
+        var a = new Date();
+        a = new Date(a.getTime() +1000*60*60*24*30);
+        document.cookie = "user=" + userDropdown.value + ";expires=" + a.toGMTString() + ";";
+
         console.log("saved user to cookie");
       } else {
         document.cookie = 'user' + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
